@@ -1,0 +1,21 @@
+Đổi địa chỉ IP wifi khi chạy ở  wifi khác:
+bên backend sửa file .env và .env.example
+bên fontend sửa .env.development
+
+
+
+Chạy máy khác: thì chạy lệnh
+	docker rm -f mongo-rs
+	docker run -d -p 27017:27017 --name mongo-rs mongo --replSet rs0 --bind_ip_all   # bên backend
+	docker exec -it mongo-rs mongosh
+	rs.initiate({
+  		_id: "rs0",
+		members: [{ _id: 0, host: "host.docker.internal:27017" }]
+	})
+	
+	rs.status()
+	docker build --no-cache -t chat-backend . # bên backend
+	docker run -p 5001:5001 -v %cd%/data:/app/data chat-backend  # bên backend
+
+	docker build --no-cache -t chat-frontend . # bên fontend
+	docker run -p 5173:5173 chat-frontend    # bên fontend
